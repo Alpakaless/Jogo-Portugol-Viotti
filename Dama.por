@@ -3,31 +3,27 @@ programa
     // Jogo de Damas em Portugol
 
     // Variaveis globais
-    inteiro corSelecionada
+    inteiro indexVertical, indexHorizontal, corSelecionada, ultimaPecaDoJogadorSelecionadaVertical, ultimaPecaDoJogadorSelecionadaHorizontal, tamanho = 8
     cadeia tabuleiro[8][8] // Matriz que representa o tabuleiro com as pecas
-    inteiro tamanho = 8 // Tamanho do tabuleiro (8x8)
     cadeia controleDoTabuleiroVertical[8] = {"   ", "A", "B", "C", "D", "E", "F", "G", "H"}
     cadeia controleDoTabuleiroHorizontal[7] = {"1", "2", "3", "4", "5", "6", "7", "8"}
-    cadeia pecaPreta = "◙"
-    cadeia pecaBranca = "○"
-    cadeia pecaJogador, pecaMaquina
+    cadeia  pecaJogador, pecaMaquina, pecaPreta = "◙", pecaBranca = "○"
   // função de inicio
 
   funcao inicio(){
     corSelecionada = selecaoDeCor()
 
-    escreva ("Iniciando o jogo... \n")
+    escreva ("Iniciando o jogo... \n\n")
     atualizaTabuleiro()
     renderizaTabuleiro()
 
     se(corSelecionada == 0){
-        escreva("Você começa  \n")
-
-        selecaoDaPeca()
-      }senao{
-        escreva("A maquina começa  \n")
-        acaoDaMaquina()
-      }
+      escreva("Você começa  \n")
+      selecaoDaPeca()
+    }senao{
+      escreva("A maquina começa  \n")
+      acaoDaMaquina()
+    }
   }
 
 
@@ -54,15 +50,22 @@ programa
     funcao atualizaTabuleiro(){
     }
     funcao inteiro selecaoDeCor(){
-      inteiro cor
+      cadeia cor = ""
+      inteiro numero
+        enquanto(cor != "0" e cor != "1"){
+          escreva("Escolha suas peças \n")
+          escreva("0) ○ Brancas \n")
+          escreva("1) ◙ Pretas \n")
+          leia(cor)
+          limpa()
+        }
+        numero = converteTextoParaNumero(cor)
+        definePecas(numero)
+      retorne numero
+    }
+    funcao definePecas(inteiro numero){
       cadeia peca
-      enquanto(cor != 0 e cor != 1){
-        escreva("Escolha suas peças \n")
-        escreva("0) ○ Brancas \n")
-        escreva("1) ◙ Pretas \n")
-        leia(cor)
-      }
-      se(cor == 0){
+      se(numero == 0){
           pecaJogador = pecaBranca
           pecaMaquina = pecaPreta
         }senao{
@@ -93,89 +96,90 @@ programa
               }
           }
         }
-        escreva(tabuleiro)
-      retorne cor
     }
-
     funcao selecaoDaPeca(){
-      caracter posicaoVertical
-      inteiro indexVertical, indexHorizontal
       escreva("Selecão de peça... \n")
-      escreva("posição vertical \n")
-      leia(posicaoVertical)
-      escreva("posição Horizontal \n")
-      leia(indexHorizontal)
-      enquanto(posicaoVertical != "a" e posicaoVertical != "A" e  posicaoVertical != "b" e  posicaoVertical != "B" e  posicaoVertical != "c" e  posicaoVertical != "C" e  posicaoVertical != "d" e  posicaoVertical != "D" e  posicaoVertical != "e" e  posicaoVertical != "E" e  posicaoVertical != "f" e  posicaoVertical != "F" e  posicaoVertical != "g" e  posicaoVertical != "G" e  posicaoVertical != "h" e  posicaoVertical != "H"){
-      escolha(posicaoVertical){
-        caso "a" ou "A":
-          indexVertical = 0
-        pare
-        caso "b" ou "B":
-          indexVertical = 1
-        pare
-        caso "c" ou "C":
-          indexVertical = 2
-        pare
-        caso "d" ou "D":
-          indexVertical = 3
-        pare
-        caso "e" ou "E":
-          indexVertical = 4
-        pare
-        caso "f" ou "F":
-          indexVertical = 5
-        pare
-        caso "g" ou "G":
-          indexVertical = 6
-        pare
-        caso "h" ou "H":
-          indexVertical = 7
-        pare
-
-        caso contrario:
-        escreva("Posição invalida")
-      }
-      }
+      pegarindexVerticalPorLetra()
+      limpa()
       enquanto(tabuleiro[indexVertical][indexHorizontal - 1] != pecaJogador){
+        renderizaTabuleiro()
         escreva("Você não tem nenhuma peça nessa posição... \n")
-      escreva("posição vertical \n")
-      leia(posicaoVertical)
-      escreva("posição Horizontal \n")
-      leia(indexHorizontal)
-      escolha(posicaoVertical){
-        caso "a" ou "A":
-          indexVertical = 0
-        pare
-        caso "b" ou "B":
-          indexVertical = 1
-        pare
-        caso "c" ou "C":
-          indexVertical = 2
-        pare
-        caso "d" ou "D":
-          indexVertical = 3
-        pare
-        caso "e" ou "E":
-          indexVertical = 4
-        pare
-        caso "f" ou "F":
-          indexVertical = 5
-        pare
-        caso "g" ou "G":
-          indexVertical = 6
-        pare
-        caso "h" ou "H":
-          indexVertical = 7
-        pare
+        pegarindexVerticalPorLetra()
+        limpa()
       }
-      }
-      selecaoDaAcao(indexVertical, indexHorizontal - 1)
+      selecaoDaAcao()
     }
     funcao selecaoDaAcao(){
+      ultimaPecaDoJogadorSelecionadaVertical = indexVertical
+      ultimaPecaDoJogadorSelecionadaHorizontal = indexHorizontal
+      inteiro acao
+      enquanto(acao != 0 e acao != 1){
+        escreva("selecione a ação: \n")
+        escreva("0) mover \n")
+        se((tabuleiro[indexVertical+1][indexHorizontal+1] == pecaMaquina e (tabuleiro[indexVertical+2][indexHorizontal+2] == " " ou tabuleiro[indexVertical+2][indexHorizontal-2] == " "))){
+          escreva("1) comer \n")
+        }
+        leia(acao)
+      }
+      se(acao == 1){
 
+      }senao{
+        escreva("Escolha a casa para mover \n")
+        enquanto(tabuleiro[indexVertical][indexHorizontal - 1] != " "){
+        escreva("Essa casa já está ocupada... \n")
+        pegarindexVerticalPorLetra()
+      }
+      }
     }
 
     funcao acaoDaMaquina(){
 
+    }
+
+    funcao pegarindexVerticalPorLetra(){
+      cadeia posicaoVertical
+      enquanto(indexVertical != 0 e indexVertical != 1 e indexVertical != 2 e indexVertical != 3 e indexVertical != 4 e indexVertical != 5 e indexVertical != 6 e indexVertical != 7){
+         escreva("posição vertical \n")
+        leia(posicaoVertical)
+        escreva("posição Horizontal \n")
+        leia(indexHorizontal)
+        indexVertical = converteTextoParaNumero(posicaoVertical)
+        escreva(indexVertical)
+        se(indexVertical == 11){
+          escreva("Posição inválida \n")
+        }
+      }
+    }
+
+    funcao inteiro converteTextoParaNumero(cadeia texto){
+      se(texto == "0" ou texto == "a" ou texto == "A"){
+        retorne 0
+      }senao se(texto == "1" ou texto == "b" ou texto == "B"){
+        retorne 1
+      }senao se(texto == "2" ou texto == "c" ou texto == "C"){
+        retorne 2
+      }senao se(texto == "3" ou texto == "d" ou texto == "D"){
+        retorne 3
+      }senao se(texto == "4" ou texto == "e" ou texto == "E"){
+        retorne 4
+      }senao se(texto == "5" ou texto == "f" ou texto == "F"){
+        retorne 5
+      }senao se(texto == "6" ou texto == "g" ou texto == "G"){
+        retorne 6
+      }senao se(texto == "7" ou texto == "h" ou texto == "H"){
+        retorne 7
+      }senao se(texto == "8" ou texto == "i" ou texto == "I"){
+        retorne 8
+      }senao se(texto == "9" ou texto == "j" ou texto == "J"){
+        retorne 9
+      }senao{
+        retorne 11
+      }
+    }
+
+    funcao pulaLinha(inteiro quantidade){
+      para(inteiro i = 1; i <= quantidade; i++){
+        escreva("\n")     
+      }
     }
 }
