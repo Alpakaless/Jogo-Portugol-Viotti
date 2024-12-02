@@ -1,4 +1,6 @@
 programa {
+// import libraries
+inclua biblioteca Util
 
 // global vars
 const inteiro tamanho = 8
@@ -132,6 +134,7 @@ funcao escolheAcao(){
 	
 }
 
+// verification player action
 funcao logico validaAcao(cadeia tipo){
 	se(tipo == "peca"){
 		se((cadeiaParaInteiro(ultimaPecaVertical) < 1 e cadeiaParaInteiro(ultimaPecaVertical) > 7) ou // verificação de limite do tabuleiro vertical
@@ -148,10 +151,42 @@ funcao logico validaAcao(cadeia tipo){
 			(cadeiaParaInteiro(ultimaPecaVertical) == 8 e  cadeiaParaInteiro(ultimaJogadaVertical) >= 8) ou // verificação de limite maximo do tabuleiro vertical
 			(cadeiaParaInteiro(ultimaPecaHorizontal) == 1 e  cadeiaParaInteiro(ultimaJogadaHorizontal) <= 1) ou // verificação de limite minimo do tabuleiro horizontal
 			(cadeiaParaInteiro(ultimaPecaHorizontal) == 8 e  cadeiaParaInteiro(ultimaJogadaHorizontal) >= 8) ou // verificação de limite maximo do tabuleiro horizontal
-			(cadeiaParaInteiro(ultimaPecaVertical)+1 != cadeiaParaInteiro(ultimaJogadaVertical) e // verificação da distancia Peça <--> Jogada
-			cadeiaParaInteiro(ultimaPecaVertical)-1 != cadeiaParaInteiro(ultimaJogadaVertical) e
-			cadeiaParaInteiro(ultimaPecaHorizontal)-1 != cadeiaParaInteiro(ultimaJogadaHorizontal) e //
-			cadeiaParaInteiro(ultimaPecaHorizontal)+1 != cadeiaParaInteiro(ultimaJogadaHorizontal)) ou //
+			((cadeiaParaInteiro(ultimaPecaVertical)+1 != cadeiaParaInteiro(ultimaJogadaVertical) e // verificação da distancia Peça <--> Jogada
+			cadeiaParaInteiro(ultimaPecaVertical)-1 != cadeiaParaInteiro(ultimaJogadaVertical)) e
+			(cadeiaParaInteiro(ultimaPecaHorizontal)-1 != cadeiaParaInteiro(ultimaJogadaHorizontal) e //
+			cadeiaParaInteiro(ultimaPecaHorizontal)+1 != cadeiaParaInteiro(ultimaJogadaHorizontal))) ou //
+			(tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] != " ")) // verificação do conteúdo
+			{
+			retorne verdadeiro // mantem enquanto
+		}senao{
+			retorne falso // encerra enquanto
+			}
+	}senao {
+		retorne verdadeiro
+	}
+}
+
+// verification bot action
+funcao logico validaMaquinaAcao(cadeia tipo){
+	se(tipo == "peca"){
+		se((cadeiaParaInteiro(ultimaPecaVertical) < 1 e cadeiaParaInteiro(ultimaPecaVertical) > 7) ou // verificação de limite do tabuleiro vertical
+			(cadeiaParaInteiro(ultimaPecaHorizontal) < 1 e cadeiaParaInteiro(ultimaPecaHorizontal) > 7) ou // verificação de limite do tabuleiro horizontal
+			tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] != pecaMaquina){ // verificação de peça !== peça do jogador
+				retorne verdadeiro // mantem enquanto
+			}senao{
+				retorne falso // encerra enquanto
+			}	
+	}senao se(tipo == "jogada"){
+		se((cadeiaParaInteiro(ultimaJogadaVertical) < 1 e cadeiaParaInteiro(ultimaJogadaVertical) > 7) ou // verificação de limite do tabuleiro vertical
+			(cadeiaParaInteiro(ultimaJogadaHorizontal) < 1 e cadeiaParaInteiro(ultimaJogadaHorizontal) > 7) ou // verificação de limite do tabuleiro horizontal
+			(cadeiaParaInteiro(ultimaPecaVertical) == 1 e  cadeiaParaInteiro(ultimaJogadaVertical) <= 1) ou // verificação de limite minimo do tabuleiro vertical
+			(cadeiaParaInteiro(ultimaPecaVertical) == 8 e  cadeiaParaInteiro(ultimaJogadaVertical) >= 8) ou // verificação de limite maximo do tabuleiro vertical
+			(cadeiaParaInteiro(ultimaPecaHorizontal) == 1 e  cadeiaParaInteiro(ultimaJogadaHorizontal) <= 1) ou // verificação de limite minimo do tabuleiro horizontal
+			(cadeiaParaInteiro(ultimaPecaHorizontal) == 8 e  cadeiaParaInteiro(ultimaJogadaHorizontal) >= 8) ou // verificação de limite maximo do tabuleiro horizontal
+			((cadeiaParaInteiro(ultimaPecaVertical)+1 != cadeiaParaInteiro(ultimaJogadaVertical) e // verificação da distancia Peça <--> Jogada
+			cadeiaParaInteiro(ultimaPecaVertical)-1 != cadeiaParaInteiro(ultimaJogadaVertical)) e
+			(cadeiaParaInteiro(ultimaPecaHorizontal)-1 != cadeiaParaInteiro(ultimaJogadaHorizontal) e //
+			cadeiaParaInteiro(ultimaPecaHorizontal)+1 != cadeiaParaInteiro(ultimaJogadaHorizontal))) ou //
 			(tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] != " ")) // verificação do conteúdo
 			{ 
 			retorne verdadeiro // mantem enquanto
@@ -168,8 +203,19 @@ funcao acaoDaMaquina(){
 	ultimaPecaHorizontal = "1"
 	ultimaJogadaVertical = "1"
 	ultimaJogadaHorizontal = "1"
+	enquanto(validaMaquinaAcao("peca")){ // verificação de conteúdo na casa
+		ultimaPecaVertical = inteiroParaCadeia(Util.sorteia(1, 7))
+		ultimaPecaHorizontal = inteiroParaCadeia(Util.sorteia(1, 7))
+	}
+	enquanto(validaMaquinaAcao("jogada")){
+		ultimaJogadaVertical = inteiroParaCadeia(Util.sorteia(1, 7))
+		ultimaJogadaHorizontal = inteiroParaCadeia(Util.sorteia(1, 7))
+	}
+	tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] = " "
+	tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] = pecaMaquina
 }
 
+// convert string to integer
 funcao inteiro cadeiaParaInteiro(cadeia texto){
 	se(texto == "1" ou texto == "a" ou texto == "A"){
         retorne 1
@@ -194,6 +240,35 @@ funcao inteiro cadeiaParaInteiro(cadeia texto){
       }	
 }
 
+// convert integer to string
+funcao cadeia inteiroParaCadeia(inteiro numero){
+	se(numero == 1){
+        retorne "1"
+      }senao se(numero == 2){
+        retorne "2"
+      }senao se(numero == 3){
+        retorne "3"
+      }senao se(numero == 4){
+        retorne "4"
+      }senao se(numero == 5){
+        retorne "5"
+      }senao se(numero == 6){
+        retorne "6"
+      }senao se(numero == 7){
+        retorne "7"
+      }senao se(numero == 8){
+        retorne "8"
+      }senao se(numero == 9){
+        retorne "9"
+      }senao se(numero == 10){
+        retorne "10"
+      }senao{
+        retorne "11"
+      }	
+}
+
+
+// easily text format
 funcao escreval(cadeia texto, inteiro quantidade, logico formatado){
 	cadeia textoComQuebraDeLinha = ""
 
@@ -218,8 +293,8 @@ funcao escreval(cadeia texto, inteiro quantidade, logico formatado){
  * Esta seção do arquivo guarda informações do Portugol Studio.
  * Você pode apagá-la se estiver utilizando outro editor.
  * 
- * @POSICAO-CURSOR = 6762; 
- * @DOBRAMENTO-CODIGO = [143, 134, 172, 196];
+ * @POSICAO-CURSOR = 9540; 
+ * @DOBRAMENTO-CODIGO = [243, 271];
  * @PONTOS-DE-PARADA = ;
  * @SIMBOLOS-INSPECIONADOS = ;
  * @FILTRO-ARVORE-TIPOS-DE-DADO = inteiro, real, logico, cadeia, caracter, vazio;
