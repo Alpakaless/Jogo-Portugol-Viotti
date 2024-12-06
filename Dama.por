@@ -8,8 +8,8 @@ const cadeia pecaPreta = "◙", pecaBranca = "○",
 controleDoTabuleiroVertical[9] = {"  ", "A", "B", "C", "D", "E", "F", "G", "H"}, 
 controleDoTabuleiroHorizontal[8] = {"1", "2", "3", "4", "5", "6", "7", "8"}
 cadeia pecaJogador = "", pecaMaquina = "", ultimaJogadaVertical = "1", ultimaJogadaHorizontal = "1", ultimaPecaVertical = "1", ultimaPecaHorizontal = "1", tabuleiro[8][8]
-inteiro vez = 11 // 0 = player | 1 = bot
-logico continuaJogo = verdadeiro
+inteiro vez = 11, casaAComer = -1 // 0 = player | 1 = bot
+logico continuaJogo = verdadeiro, comerPeca = falso
 // start aplication
 funcao inicio(){
 	escolhePeca()
@@ -92,26 +92,26 @@ funcao renderizaTabuleiro(){
 
 // choice player actions
 funcao escolheAcao(){
-	ultimaPecaVertical = "1"
-	ultimaPecaHorizontal = "1"
-	ultimaJogadaVertical = "1"
-	ultimaJogadaHorizontal = "1"
+	ultimaPecaVertical = "x"
+	ultimaPecaHorizontal = "x"
+	ultimaJogadaVertical = "x"
+	ultimaJogadaHorizontal = "x"
+	
 	escreval("Sua Vez...", 2, verdadeiro)
-	escreval("Escolha sua peça...", 2, verdadeiro)
+	escreval("Escolha sua peça...", 2, falso)
 	enquanto(validaAcao("peca")){ // verificação de conteúdo na casa
-		escreval("Ultima Peça Selecionada: \n Posição Vertical " + ultimaPecaVertical + " | Posição Horizontal " + ultimaPecaHorizontal, 2, falso)
 		renderizaTabuleiro()
 		escreval("Selecione uma peça:", 1, falso)
 		escreval("Posição Vertical. A, B, C, D, E, F, G, H...", 0, falso)
 		leia(ultimaPecaVertical)
 		escreval("Posição Horizontal... 1, 2, 3, 4, 5, 6, 7, 8", 0, falso)
 		leia(ultimaPecaHorizontal)
-		limpa()
-		
+	//	limpa()
 		escreval("Peça inválida...", 1, verdadeiro)
 		escreval("Escolha sua peça...", 2, falso)
 	}
-	limpa()
+	
+	//limpa()
 	escreval("Sua Vez...", 2, falso)
 	escreval("Faça sua Jogada...", 2, verdadeiro)
 
@@ -124,95 +124,313 @@ funcao escolheAcao(){
 		leia(ultimaJogadaVertical)
 		escreval("Posição Horizontal... 1, 2, 3, 4, 5, 6, 7, 8", 0, falso)
 		leia(ultimaJogadaHorizontal)
-		limpa()
 		escreval("Posição inválida...", 1, verdadeiro)
 		escreval("Faça sua Jogada...", 2, falso)
 	}
-	limpa()
+	escreva("comerPeca >" + comerPeca + "< \n") 
 	tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] = " "
-	tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] = pecaJogador
+	se(comerPeca == verdadeiro){
+		tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][casaAComer] = " "
+	}
 	
+	tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] = pecaJogador
+	comerPeca = falso
+	renderizaTabuleiro()
 }
 
 // verification player action
 funcao logico validaAcao(cadeia tipo){
+	//escreva("tipo "+ tipo + "\n")
 	se(tipo == "peca"){
-		se((cadeiaParaInteiro(ultimaPecaVertical) < 1 e cadeiaParaInteiro(ultimaPecaVertical) > 7) ou // verificação de limite do tabuleiro vertical
-			(cadeiaParaInteiro(ultimaPecaHorizontal) < 1 e cadeiaParaInteiro(ultimaPecaHorizontal) > 7) ou // verificação de limite do tabuleiro horizontal
-			tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] != pecaJogador){ // verificação de peça !== peça do jogador
-				retorne verdadeiro // mantem enquanto
-			}senao{
-				retorne falso // encerra enquanto
-			}	
+		//escreva("enquanto peca" + "\n")
+		se(ultimaPecaVertical == "x" ou ultimaPecaHorizontal == "x" ou
+		(ultimaPecaVertical != "a" e ultimaPecaVertical != "b" e ultimaPecaVertical != "c" e ultimaPecaVertical != "d" e ultimaPecaVertical != "e" e ultimaPecaVertical != "f" e ultimaPecaVertical != "g" e ultimaPecaVertical != "h") ou
+		(ultimaPecaHorizontal != "1" e ultimaPecaHorizontal != "2" e ultimaPecaHorizontal != "3" e ultimaPecaHorizontal != "4" e ultimaPecaHorizontal != "5" e ultimaPecaHorizontal != "6" e ultimaPecaHorizontal != "7" e ultimaPecaHorizontal != "8")){
+			retorne verdadeiro
+		}
+		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] == pecaJogador){
+          	se(cadeiaParaInteiro(ultimaPecaHorizontal) > 1 e cadeiaParaInteiro(ultimaPecaHorizontal) <= 7){
+				se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1+1] == pecaMaquina e
+				cadeiaParaInteiro(ultimaPecaHorizontal) < 6){
+					se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-2][cadeiaParaInteiro(ultimaPecaHorizontal)-1+2] == " "){
+						retorne falso
+					}
+				}
+				
+				se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1-1] == pecaMaquina e
+				cadeiaParaInteiro(ultimaPecaHorizontal) > 2){
+					se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-2][cadeiaParaInteiro(ultimaPecaHorizontal)-1-2] == " "){
+						retorne falso
+					}
+				}
+          		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1+1] == " "){
+					retorne falso
+				}
+				se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1-1] == " "){
+					retorne falso
+				}
+          	}senao se(cadeiaParaInteiro(ultimaPecaHorizontal) == 1){
+          		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1+1] == pecaMaquina e
+				tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-2][cadeiaParaInteiro(ultimaPecaHorizontal)-1+2] == " "){
+					retorne falso
+				}
+				se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1+1] == " "){
+					retorne falso
+				}
+          	}senao se(cadeiaParaInteiro(ultimaPecaHorizontal) == 8){
+          		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1-1] == pecaMaquina e
+				tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-2][cadeiaParaInteiro(ultimaPecaHorizontal)-1-2] == " "){
+					retorne falso
+				}
+				se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1-1] == " "){
+					retorne falso
+				}
+          	}
+          }
 	}senao se(tipo == "jogada"){
-		se((cadeiaParaInteiro(ultimaJogadaVertical) < 1 e cadeiaParaInteiro(ultimaJogadaVertical) > 7) ou // verificação de limite do tabuleiro vertical
-			(cadeiaParaInteiro(ultimaJogadaHorizontal) < 1 e cadeiaParaInteiro(ultimaJogadaHorizontal) > 7) ou // verificação de limite do tabuleiro horizontal
-			(cadeiaParaInteiro(ultimaPecaVertical) == 1 e  cadeiaParaInteiro(ultimaJogadaVertical) <= 1) ou // verificação de limite minimo do tabuleiro vertical
-			(cadeiaParaInteiro(ultimaPecaVertical) == 8 e  cadeiaParaInteiro(ultimaJogadaVertical) >= 8) ou // verificação de limite maximo do tabuleiro vertical
-			(cadeiaParaInteiro(ultimaPecaHorizontal) == 1 e  cadeiaParaInteiro(ultimaJogadaHorizontal) <= 1) ou // verificação de limite minimo do tabuleiro horizontal
-			(cadeiaParaInteiro(ultimaPecaHorizontal) == 8 e  cadeiaParaInteiro(ultimaJogadaHorizontal) >= 8) ou // verificação de limite maximo do tabuleiro horizontal
-			((cadeiaParaInteiro(ultimaPecaVertical)+1 != cadeiaParaInteiro(ultimaJogadaVertical) e // verificação da distancia Peça <--> Jogada
-			cadeiaParaInteiro(ultimaPecaVertical)-1 != cadeiaParaInteiro(ultimaJogadaVertical)) e
-			(cadeiaParaInteiro(ultimaPecaHorizontal)-1 != cadeiaParaInteiro(ultimaJogadaHorizontal) e //
-			cadeiaParaInteiro(ultimaPecaHorizontal)+1 != cadeiaParaInteiro(ultimaJogadaHorizontal))) ou //
-			(tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] != " ")) // verificação do conteúdo
-			{
-			retorne verdadeiro // mantem enquanto
-		}senao{
-			retorne falso // encerra enquanto
-			}
-	}senao {
-		retorne verdadeiro
+		escreva("enquanto jogada \n")
+		se(ultimaJogadaVertical == "x" ou ultimaJogadaHorizontal == "x" ou
+		(ultimaJogadaVertical != "a" e ultimaJogadaVertical != "b" e ultimaJogadaVertical != "c" e ultimaJogadaVertical != "d" e ultimaJogadaVertical != "e" e ultimaJogadaVertical != "f" e ultimaJogadaVertical != "g" e ultimaJogadaVertical != "h") ou
+		(ultimaJogadaHorizontal != "1" e ultimaJogadaHorizontal != "2" e ultimaJogadaHorizontal != "3" e ultimaJogadaHorizontal != "4" e ultimaJogadaHorizontal != "5" e ultimaJogadaHorizontal != "6" e ultimaJogadaHorizontal != "7" e ultimaJogadaHorizontal != "8")){
+			retorne verdadeiro
+		}
+		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] == pecaJogador){
+			se(cadeiaParaInteiro(ultimaPecaHorizontal) > 1 e cadeiaParaInteiro(ultimaPecaHorizontal) <= 7){
+				//escreva("come direita \n")
+				se(cadeiaParaInteiro(ultimaJogadaHorizontal) < 6 e
+				tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][cadeiaParaInteiro(ultimaPecaHorizontal)-2] == pecaMaquina e
+				tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
+					casaAComer = cadeiaParaInteiro(ultimaPecaHorizontal)-2
+					comerPeca = verdadeiro
+					retorne falso
+				}
+
+				//escreva("come esquerda \n")
+				se(cadeiaParaInteiro(ultimaJogadaHorizontal) > 2 e 
+				tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][cadeiaParaInteiro(ultimaPecaHorizontal)] == pecaMaquina e
+				tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
+					casaAComer = cadeiaParaInteiro(ultimaPecaHorizontal)
+					comerPeca = verdadeiro
+					retorne falso
+				}
+          		se(tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)+1] == " "){
+					retorne falso
+				}
+				se(tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
+					retorne falso
+				}
+          	}senao se(cadeiaParaInteiro(ultimaPecaHorizontal) == 1){
+          		escreva("come direita \n")
+          		se(cadeiaParaInteiro(ultimaJogadaHorizontal) > 2 e tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][cadeiaParaInteiro(ultimaPecaHorizontal)-2] == pecaMaquina e
+				tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
+					casaAComer = cadeiaParaInteiro(ultimaPecaHorizontal)-2
+					comerPeca = verdadeiro
+					retorne falso
+				}
+				escreva("anda direita \n")
+				se(tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
+					retorne falso
+				}
+          	}senao se(cadeiaParaInteiro(ultimaPecaHorizontal) == 8){
+          		escreva("come esquerda \n")
+          		se(cadeiaParaInteiro(ultimaJogadaHorizontal) > 6 e tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][cadeiaParaInteiro(ultimaPecaHorizontal)] == pecaMaquina e
+				tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
+					casaAComer = cadeiaParaInteiro(ultimaPecaHorizontal)
+					comerPeca = verdadeiro
+					retorne falso
+				}
+				escreva("anda esquerda \n")
+				se(tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
+					retorne falso
+				}
+          	}
+          }
 	}
+	retorne verdadeiro // continua enquanto
 }
 
-// verification bot action
-funcao logico validaMaquinaAcao(cadeia tipo){
-	se(tipo == "peca"){
-		se((cadeiaParaInteiro(ultimaPecaVertical) < 1 e cadeiaParaInteiro(ultimaPecaVertical) > 7) ou // verificação de limite do tabuleiro vertical
-			(cadeiaParaInteiro(ultimaPecaHorizontal) < 1 e cadeiaParaInteiro(ultimaPecaHorizontal) > 7) ou // verificação de limite do tabuleiro horizontal
-			tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] != pecaMaquina){ // verificação de peça !== peça do jogador
-				retorne verdadeiro // mantem enquanto
-			}senao{
-				retorne falso // encerra enquanto
-			}	
-	}senao se(tipo == "jogada"){
-		se((cadeiaParaInteiro(ultimaJogadaVertical) < 1 e cadeiaParaInteiro(ultimaJogadaVertical) > 7) ou // verificação de limite do tabuleiro vertical
-			(cadeiaParaInteiro(ultimaJogadaHorizontal) < 1 e cadeiaParaInteiro(ultimaJogadaHorizontal) > 7) ou // verificação de limite do tabuleiro horizontal
-			(cadeiaParaInteiro(ultimaPecaVertical) == 1 e  cadeiaParaInteiro(ultimaJogadaVertical) <= 1) ou // verificação de limite minimo do tabuleiro vertical
-			(cadeiaParaInteiro(ultimaPecaVertical) == 8 e  cadeiaParaInteiro(ultimaJogadaVertical) >= 8) ou // verificação de limite maximo do tabuleiro vertical
-			(cadeiaParaInteiro(ultimaPecaHorizontal) == 1 e  cadeiaParaInteiro(ultimaJogadaHorizontal) <= 1) ou // verificação de limite minimo do tabuleiro horizontal
-			(cadeiaParaInteiro(ultimaPecaHorizontal) == 8 e  cadeiaParaInteiro(ultimaJogadaHorizontal) >= 8) ou // verificação de limite maximo do tabuleiro horizontal
-			((cadeiaParaInteiro(ultimaPecaVertical)+1 != cadeiaParaInteiro(ultimaJogadaVertical) e // verificação da distancia Peça <--> Jogada
-			cadeiaParaInteiro(ultimaPecaVertical)-1 != cadeiaParaInteiro(ultimaJogadaVertical)) e
-			(cadeiaParaInteiro(ultimaPecaHorizontal)-1 != cadeiaParaInteiro(ultimaJogadaHorizontal) e //
-			cadeiaParaInteiro(ultimaPecaHorizontal)+1 != cadeiaParaInteiro(ultimaJogadaHorizontal))) ou //
-			(tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] != " ")) // verificação do conteúdo
-			{ 
-			retorne verdadeiro // mantem enquanto
-		}senao{
-			retorne falso // encerra enquanto
-			}
-	}senao {
-		retorne verdadeiro
-	}
-}
-
+// choice bot actions
 funcao acaoDaMaquina(){
-	ultimaPecaVertical = "1"
-	ultimaPecaHorizontal = "1"
-	ultimaJogadaVertical = "1"
-	ultimaJogadaHorizontal = "1"
-	enquanto(validaMaquinaAcao("peca")){ // verificação de conteúdo na casa
-		ultimaPecaVertical = inteiroParaCadeia(Util.sorteia(1, 7))
-		ultimaPecaHorizontal = inteiroParaCadeia(Util.sorteia(1, 7))
+	ultimaPecaVertical = "x"
+	ultimaPecaHorizontal = "x"
+	ultimaJogadaVertical = "x"
+	ultimaJogadaHorizontal = "x"
+	inteiro pecasPossiveis = 0, jogadasPossiveis = 0, pecasPossiveisVertical[64], pecasPossiveisHorizontal[64], jogadasPossiveisVertical[64], jogadasPossiveisHorizontal[64]
+	para(inteiro vertical = 1; vertical <= tamanho; vertical++){
+          para(inteiro horizontal = 1; horizontal <= tamanho; horizontal++){
+          se(tabuleiro[vertical-1][horizontal-1] == pecaMaquina){
+          	se(horizontal > 1 e horizontal <= 7){
+				se(horizontal < 6 e tabuleiro[vertical-1+1][horizontal-1+1] == pecaJogador){
+					se(tabuleiro[vertical-1+2][horizontal-1+2] == " "){
+						pecasPossiveisVertical[pecasPossiveis] = vertical+2
+						pecasPossiveisHorizontal[pecasPossiveis] = horizontal+2
+						pecasPossiveis++
+					}
+				}
+				
+				se(horizontal > 2 e tabuleiro[vertical-1+1][horizontal-1-1] == pecaJogador){
+					se(tabuleiro[vertical-1+2][horizontal-1-2] == " "){
+						pecasPossiveisVertical[pecasPossiveis] = vertical+2
+						pecasPossiveisHorizontal[pecasPossiveis] = horizontal-2
+						pecasPossiveis++
+					}
+				}
+        	
+          		se(tabuleiro[vertical-1+1][horizontal-1+1] == " "){
+					pecasPossiveisVertical[pecasPossiveis] = vertical-1
+					pecasPossiveisHorizontal[pecasPossiveis] = horizontal+1
+					pecasPossiveis++
+				}
+				se(tabuleiro[vertical-1+1][horizontal-1-1] == " "){
+					pecasPossiveisVertical[pecasPossiveis] = vertical-1
+					pecasPossiveisHorizontal[pecasPossiveis] = horizontal-1
+					pecasPossiveis++
+				}
+          	}senao se(horizontal == 1){
+          		se(tabuleiro[vertical-1+1][horizontal-1+1] == pecaJogador e
+				tabuleiro[vertical-1+2][horizontal-1+2] == " "){
+					pecasPossiveisVertical[pecasPossiveis] = vertical-2
+					pecasPossiveisHorizontal[pecasPossiveis] = horizontal+2
+					pecasPossiveis++
+				}
+				se(tabuleiro[vertical-1+1][horizontal-1+1] == " "){
+					pecasPossiveisVertical[pecasPossiveis] = vertical-1
+					pecasPossiveisHorizontal[pecasPossiveis] = horizontal+1
+					pecasPossiveis++
+				}
+          	}senao se(horizontal == 8){
+          		se(tabuleiro[vertical-1+1][horizontal-1-1] == pecaJogador e
+				tabuleiro[vertical-1+2][horizontal-1-2] == " "){
+					pecasPossiveisVertical[pecasPossiveis] = vertical-2
+					pecasPossiveisHorizontal[pecasPossiveis] = horizontal-2
+					pecasPossiveis++
+				}
+				se(tabuleiro[vertical-1+1][horizontal-1-1] == " "){
+					pecasPossiveisVertical[pecasPossiveis] = vertical-1
+					pecasPossiveisHorizontal[pecasPossiveis] = horizontal-1
+					pecasPossiveis++
+				}
+          	}
+          }
 	}
-	enquanto(validaMaquinaAcao("jogada")){
-		ultimaJogadaVertical = inteiroParaCadeia(Util.sorteia(1, 7))
-		ultimaJogadaHorizontal = inteiroParaCadeia(Util.sorteia(1, 7))
+}
+	
+	//para(inteiro x = 0; x < pecasPossiveis; x++){
+	//	escreva("vertical - " + pecasPossiveisVertical[x] + " | " + "horizontal - " + pecasPossiveisHorizontal[x] +  "\n")
+	//}
+	escreva("peças possíveis - " + pecasPossiveis + "\n")
+	inteiro numeroAleatorio = 0
+	se(pecasPossiveis > 1){
+		numeroAleatorio = Util.sorteia(0, pecasPossiveis-1)
 	}
-	tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] = " "
-	tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] = pecaMaquina
+	
+	escreva("número aleatório " + numeroAleatorio + "\n")
+	
+	ultimaPecaVertical = inteiroParaCadeia(pecasPossiveisVertical[numeroAleatorio])
+	ultimaPecaHorizontal = inteiroParaCadeia(pecasPossiveisHorizontal[numeroAleatorio])
+	
+	escreva("ultimaPecaVertical " + ultimaPecaVertical + "\n")
+	escreva("ultimaPecaHorizontal " + ultimaPecaHorizontal + "\n \n\n\n\n")
+
+		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)][cadeiaParaInteiro(ultimaPecaHorizontal)] == pecaMaquina){
+			escreva("===========\nprimeiro se\n===========\n")
+			se(cadeiaParaInteiro(ultimaPecaVertical) > 1 e cadeiaParaInteiro(ultimaPecaHorizontal) < 7){
+				escreva("centro \n")
+				escreva("come direita \n")
+				se(cadeiaParaInteiro(ultimaJogadaHorizontal) < 6){
+					se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+1][cadeiaParaInteiro(ultimaPecaHorizontal)+1] == pecaJogador){
+						se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+2][cadeiaParaInteiro(ultimaPecaHorizontal)+2] == " "){
+						
+							jogadasPossiveisVertical[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaVertical)+2
+							jogadasPossiveisHorizontal[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaHorizontal)+2
+							jogadasPossiveis++
+						}
+					}
+				}
+				//escreva("come esquerda \n")
+				se(cadeiaParaInteiro(ultimaJogadaHorizontal) > 2){
+					se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] == pecaJogador){
+						se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+2][cadeiaParaInteiro(ultimaPecaHorizontal)-2] == " "){
+				
+							jogadasPossiveisVertical[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaVertical)+2
+							jogadasPossiveisHorizontal[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaHorizontal)-2
+							jogadasPossiveis++
+						}
+					}
+				}
+				//escreva("anda direita \n")
+          		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+1][cadeiaParaInteiro(ultimaPecaHorizontal)+1] == " "){
+					
+					jogadasPossiveisVertical[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaVertical)+1
+					jogadasPossiveisHorizontal[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaHorizontal)+1
+					jogadasPossiveis++
+				}
+				//escreva("anda esquerda \n")
+				se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] == " "){
+					
+					jogadasPossiveisVertical[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaVertical)+1
+					jogadasPossiveisHorizontal[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaHorizontal)-1
+					jogadasPossiveis++
+				}
+          	}senao se(cadeiaParaInteiro(ultimaPecaHorizontal) == 1){
+          		//escreva("esquerda \n")
+          		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+1][cadeiaParaInteiro(ultimaPecaHorizontal)+1] == pecaJogador e
+				tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+2][cadeiaParaInteiro(ultimaPecaHorizontal)-1+2] == " "){
+					
+					jogadasPossiveisVertical[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaVertical)+2
+					jogadasPossiveisHorizontal[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaHorizontal)+2
+					jogadasPossiveis++
+				}
+				se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] == " "){
+					
+					jogadasPossiveisVertical[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaVertical)+1
+					jogadasPossiveisHorizontal[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaHorizontal)+1
+					jogadasPossiveis++
+				}
+          	}senao se(cadeiaParaInteiro(ultimaPecaHorizontal) == 7){
+          		//escreva("direita \n")
+          		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] == pecaJogador e
+				tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+2][cadeiaParaInteiro(ultimaPecaHorizontal)-1-2] == " "){
+					
+					jogadasPossiveisVertical[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaVertical)+2
+					jogadasPossiveisHorizontal[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaHorizontal)-2
+					jogadasPossiveis++
+				}
+				se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)+1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] == " "){
+					
+					jogadasPossiveisVertical[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaVertical)+1
+					jogadasPossiveisHorizontal[jogadasPossiveis] = cadeiaParaInteiro(ultimaPecaHorizontal)-1
+					jogadasPossiveis++
+				}
+          	}
+          }
+	//escreva("\n\n\n\n")
+     //para(inteiro x = 0; x < jogadasPossiveis; x++){
+	//	escreva("vertical -- " + jogadasPossiveisVertical[x] + "\n")
+     //  	escreva("horizontal -- " + jogadasPossiveisHorizontal[x] + "\n")
+	//}
+	//escreva("jogadas possíveis - " + jogadasPossiveis + "\n")
+
+	numeroAleatorio = 0
+	se(jogadasPossiveis > 1){
+		numeroAleatorio = Util.sorteia(0, jogadasPossiveis-1)
+	}
+	//escreva("numeroAleatorio - "+ numeroAleatorio +"\n")
+	//escreva("vertical - "+ jogadasPossiveisVertical[numeroAleatorio] +"\n")
+	//escreva("horizontal - "+ jogadasPossiveisHorizontal[numeroAleatorio] +"\n")
+	ultimaJogadaVertical = inteiroParaCadeia(jogadasPossiveisVertical[numeroAleatorio])
+	ultimaJogadaHorizontal = inteiroParaCadeia(jogadasPossiveisHorizontal[numeroAleatorio])
+	//escreva("jgoada vertical - " + ultimaJogadaVertical + "\n")
+	//escreva("jogada horizontal - " + ultimaJogadaHorizontal + "\n")
+	//escreva("ultimaPecaVertical - " + ultimaPecaVertical + "\n")
+	//escreva("ultimaPecaHorizontal - " + ultimaPecaHorizontal + "\n")
+	//escreva("ultimaJogadaVertical - " + ultimaJogadaVertical + "\n")
+	//escreva("ultimaJogadaHorizontal - " + ultimaJogadaHorizontal + "\n")
+
+	se(jogadasPossiveis > 0){
+		tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)][cadeiaParaInteiro(ultimaPecaHorizontal)] = " "
+		tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)][cadeiaParaInteiro(ultimaJogadaHorizontal)] = pecaMaquina
+	}
 }
 
 // convert string to integer
@@ -293,8 +511,8 @@ funcao escreval(cadeia texto, inteiro quantidade, logico formatado){
  * Esta seção do arquivo guarda informações do Portugol Studio.
  * Você pode apagá-la se estiver utilizando outro editor.
  * 
- * @POSICAO-CURSOR = 9540; 
- * @DOBRAMENTO-CODIGO = [243, 271];
+ * @POSICAO-CURSOR = 9462; 
+ * @DOBRAMENTO-CODIGO = [489];
  * @PONTOS-DE-PARADA = ;
  * @SIMBOLOS-INSPECIONADOS = ;
  * @FILTRO-ARVORE-TIPOS-DE-DADO = inteiro, real, logico, cadeia, caracter, vazio;
