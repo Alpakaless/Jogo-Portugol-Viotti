@@ -195,7 +195,7 @@ funcao logico validaAcao(cadeia tipo){
 			retorne verdadeiro
 		}
 		se(tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-1][cadeiaParaInteiro(ultimaPecaHorizontal)-1] == pecaJogador){
-			se(cadeiaParaInteiro(ultimaPecaHorizontal) > 1 e cadeiaParaInteiro(ultimaPecaHorizontal) <= 7){
+			se(cadeiaParaInteiro(ultimaPecaHorizontal) > 1 e cadeiaParaInteiro(ultimaPecaHorizontal) < 7){
 				//escreva("come direita \n")
 				se(cadeiaParaInteiro(ultimaJogadaHorizontal) < 6 e
 				tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][cadeiaParaInteiro(ultimaPecaHorizontal)-2] == pecaMaquina e
@@ -221,7 +221,8 @@ funcao logico validaAcao(cadeia tipo){
 				}
           	}senao se(cadeiaParaInteiro(ultimaPecaHorizontal) == 1){
           		escreva("come direita \n")
-          		se(cadeiaParaInteiro(ultimaJogadaHorizontal) > 2 e tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][cadeiaParaInteiro(ultimaPecaHorizontal)-2] == pecaMaquina e
+          		se(cadeiaParaInteiro(ultimaJogadaHorizontal) > 2 e
+				tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][cadeiaParaInteiro(ultimaPecaHorizontal)-2] == pecaMaquina e
 				tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
 					casaAComer = cadeiaParaInteiro(ultimaPecaHorizontal)-2
 					comerPeca = verdadeiro
@@ -231,9 +232,10 @@ funcao logico validaAcao(cadeia tipo){
 				se(tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
 					retorne falso
 				}
-          	}senao se(cadeiaParaInteiro(ultimaPecaHorizontal) == 8){
+          	}senao se(cadeiaParaInteiro(ultimaPecaHorizontal) == 7){
           		escreva("come esquerda \n")
-          		se(cadeiaParaInteiro(ultimaJogadaHorizontal) > 6 e tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][cadeiaParaInteiro(ultimaPecaHorizontal)] == pecaMaquina e
+          		se(cadeiaParaInteiro(ultimaJogadaHorizontal) < 6 e 
+				tabuleiro[cadeiaParaInteiro(ultimaPecaVertical)-2][cadeiaParaInteiro(ultimaPecaHorizontal)] == pecaMaquina e
 				tabuleiro[cadeiaParaInteiro(ultimaJogadaVertical)-1][cadeiaParaInteiro(ultimaJogadaHorizontal)-1] == " "){
 					casaAComer = cadeiaParaInteiro(ultimaPecaHorizontal)
 					comerPeca = verdadeiro
@@ -511,8 +513,8 @@ funcao escreval(cadeia texto, inteiro quantidade, logico formatado){
  * Esta seção do arquivo guarda informações do Portugol Studio.
  * Você pode apagá-la se estiver utilizando outro editor.
  * 
- * @POSICAO-CURSOR = 9462; 
- * @DOBRAMENTO-CODIGO = [489];
+ * @POSICAO-CURSOR = 10202; 
+ * @DOBRAMENTO-CODIGO = [491];
  * @PONTOS-DE-PARADA = ;
  * @SIMBOLOS-INSPECIONADOS = ;
  * @FILTRO-ARVORE-TIPOS-DE-DADO = inteiro, real, logico, cadeia, caracter, vazio;
